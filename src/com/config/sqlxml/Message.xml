@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Message">
+    <resultMap type="com.domain.Message" id="MessageResult">
+      <id column="ID" jdbcType="INTEGER" property="id"></id>
+      <result column="COMMAND" jdbcType="VARCHAR" property="command"></result>
+      <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"></result>
+      <result column="CONTENT" jdbcType="VARCHAR" property="content"></result>
+    </resultMap>
+    <select id="queryMessageList" parameterType="com.domain.Message" resultMap="MessageResult">
+      select <include refid="columns"/>
+      from MESSAGE
+      <where>
+        <if test="command !=null and !&quot;&quot;.equals(command.trim())">
+         and COMMAND=#{command}
+        </if>
+        <if test="description !=null and !&quot;&quot;.equals(description.trim())">
+         and DESCRIPTION like '%'#{description}'%'
+        </if>
+      </where>
+    </select>
+    <sql id="columns">ID,COMMAND,DESCRIPTION,CONTENT</sql>
+    <delete id="deleteBatch" parameterType="java.util.List">
+      delete from MESSAGE where ID in(
+       <foreach collection="list" item="item" separator=",">
+         #{item}
+       </foreach>
+      )
+    </delete>
+    <delete id="deleteOne" parameterType="int">
+      delete from MESSAGE where ID= #{_parameter}
+    </delete>
+</mapper>
